@@ -41,7 +41,7 @@ class BaseDataset(Dataset):
             limit (int | None): if not None, limit the total number of elements
                 in the dataset to 'limit' elements.
             max_audio_length (int): maximum allowed audio length.
-            max_test_length (int): maximum allowed text length.
+            max_text_length (int): maximum allowed text length.
             shuffle_index (bool): if True, shuffle the index. Uses python
                 random package with seed 42.
             instance_transforms (dict[Callable] | None): transforms that

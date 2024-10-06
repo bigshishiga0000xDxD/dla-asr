@@ -1,13 +1,12 @@
-# Based on seminar materials
-
-# Don't forget to support cases when target_text == ''
-
+import editdistance
 
 def calc_cer(target_text, predicted_text) -> float:
-    # TODO
-    pass
+    if len(predicted_text) == 0:
+        return 1
+    return editdistance.eval(target_text, predicted_text) / len(predicted_text)
 
 
 def calc_wer(target_text, predicted_text) -> float:
-    # TODO
-    pass
+    if len(predicted_text) == 0:
+        return 1
+    return editdistance.eval(target_text.split(), predicted_text.split()) / len(predicted_text.split())
