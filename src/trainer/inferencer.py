@@ -120,8 +120,7 @@ class Inferencer(BaseTrainer):
                 the dataloader (possibly transformed via batch transform)
                 and model outputs.
         """
-        # TODO change inference logic so it suits ASR assignment
-        # and task pipeline
+        # TODO get rid of copypasta
 
         batch = self.move_batch_to_device(batch)
         batch = self.transform_batch(batch)  # transform batch on device -- faster
@@ -136,20 +135,23 @@ class Inferencer(BaseTrainer):
         # Some saving logic. This is an example
         # Use if you need to save predictions on disk
 
-        batch_size = batch["logits"].shape[0]
+        batch_size = len(batch["text"])
         current_id = batch_idx * batch_size
 
         for i in range(batch_size):
             # clone because of
             # https://github.com/pytorch/pytorch/issues/1995
-            logits = batch["logits"][i].clone()
-            label = batch["labels"][i].clone()
-            pred_label = logits.argmax(dim=-1)
+            log_probs = batch["log_probs"][i]
+            log_probs_length = batch["log_probs_length"][i].item()
+            argmax_inds = log_probs.cpu().argmax(-1).numpy()[:log_probs_length]
+            argmax_text = self.text_encoder.ctc_decode(argmax_inds)
+
+            label = batch["text"][i]
 
             output_id = current_id + i
 
             output = {
-                "pred_label": pred_label,
+                "pred_label": argmax_text,
                 "label": label,
             }
 

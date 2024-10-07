@@ -1,0 +1,13 @@
+_target_: src.model.DeepSpeech2Model
+in_channels: 128
+conv_type:
+  _target_: hydra.utils.get_class
+  path: torch.nn.Conv1d
+convs_channels: [640, 640]
+convs_kernels: [5, 5]
+convs_strides: [2, 2]
+rnn_type:
+  _target_: hydra.utils.get_class
+  path: torch.nn.GRU
+n_rnn: 4
+hidden_size: 640

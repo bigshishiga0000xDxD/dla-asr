@@ -20,21 +20,27 @@ URL_LINKS = {
     "train-other-500": "https://www.openslr.org/resources/12/train-other-500.tar.gz",
 }
 
+DATA_PARTS = {
+    "train-clean": ["train-clean-100", "train-clean-360"],
+    "train-other": ["train-other-500"],
+    "train-all": ["train-clean-100", "train-clean-360", "train-other-500"]
+}
+
 
 class LibrispeechDataset(BaseDataset):
     def __init__(self, part, data_dir=None, *args, **kwargs):
-        assert part in URL_LINKS or part == "train_all"
+        assert part in URL_LINKS or part in DATA_PARTS
 
         if data_dir is None:
             data_dir = ROOT_PATH / "data" / "datasets" / "librispeech"
             data_dir.mkdir(exist_ok=True, parents=True)
         self._data_dir = data_dir
-        if part == "train_all":
+
+        if part in DATA_PARTS:
             index = sum(
                 [
-                    self._get_or_load_index(part)
-                    for part in URL_LINKS
-                    if "train" in part
+                    self._get_or_load_index(subpart)
+                    for subpart in DATA_PARTS[part]
                 ],
                 [],
             )
