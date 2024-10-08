@@ -1,17 +1,16 @@
 instance_transforms:
-  n_fft: 300
-  sample_rate: 16000
+  get_spectrogram: # special key for getting spectrogram
+    _target_: torchvision.transforms.v2.Compose
+    transforms:
+      - _target_: torchaudio.transforms.MelSpectrogram
+        sample_rate: 16000
+        n_fft: 300
+      - _target_: src.transforms.LogStable
 
   train:
-    get_spectrogram: # special key for getting spectrogram
-      _target_: torchaudio.transforms.MelSpectrogram
-      sample_rate: ${transforms.instance_transforms.sample_rate}
-      n_fft: ${transforms.instance_transforms.n_fft} 
+    get_spectrogram: ${transforms.instance_transforms.get_spectrogram}
   inference:
-    get_spectrogram:
-      _target_: torchaudio.transforms.MelSpectrogram
-      sample_rate: ${transforms.instance_transforms.sample_rate}
-      n_fft: ${transforms.instance_transforms.n_fft} 
+    get_spectrogram: ${transforms.instance_transforms.get_spectrogram}
 
 # these lines are required if you do not use batch transforms
 batch_transforms:
