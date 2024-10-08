@@ -13,7 +13,8 @@ class DeepSpeech2Model(BaseModel):
             rnn_type: type[nn.RNN] | type[nn.LSTM] | type[nn.GRU],
             n_rnn: int,
             hidden_size: int,
-            n_tokens: int
+            n_tokens: int,
+            bidirectional: bool
         ):
         """
         DeepSpeech2 architechture (http://proceedings.mlr.press/v48/amodei16.pdf)
@@ -34,6 +35,7 @@ class DeepSpeech2Model(BaseModel):
                 in case of 1d convolutions and `convs_channels[-1] * d` in case of 2d, where `d` is
                 frequency dimension after all convolutions
             n_tokens (int): number of token in vocab
+            bidirectional (bool): whether rnn is bidirectional or not
         """
         super().__init__()
 
@@ -66,13 +68,22 @@ class DeepSpeech2Model(BaseModel):
             for out_channels in convs_channels
         ])
 
-        self.rnn = rnn_type(
-            input_size=hidden_size,
-            hidden_size=hidden_size,
-            num_layers=n_rnn,
-            batch_first=True,
-            bidirectional=False
-        )
+        if bidirectional:
+            assert hidden_size % 2 == 0
+            # for bidirectional rnns, output size is doubled
+            output_size = hidden_size // 2
+        else:
+            output_size = hidden_size
+
+        self.rnns = nn.ModuleList([
+            rnn_type(
+                input_size=hidden_size,
+                hidden_size=output_size,
+                batch_first=True,
+                bidirectional=bidirectional
+            )
+            for _ in range(n_rnn)
+        ])
 
         self.debedder = nn.Linear(hidden_size, n_tokens)
     
@@ -85,13 +96,16 @@ class DeepSpeech2Model(BaseModel):
         for conv, norm in zip(self.convs, self.conv_norms):
             output = conv(output)
             output = norm(output)
+            output = nn.functional.relu(output)
         
         if len(output.shape) == 4:
             # For 2d convolutions, flatten spacial dimension afterwards
             b, c, h, l = output.shape
             output = output.reshape(b, c * h, l)
         
-        output, _ = self.rnn(output.transpose(1, 2))
+        output = output.transpose(1, 2)
+        for rnn in self.rnns:
+            output, _ = rnn(output)
         output = self.debedder(output)
 
         log_probs = nn.functional.log_softmax(output, dim=-1)
