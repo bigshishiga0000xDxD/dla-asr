@@ -5,10 +5,10 @@ conv_type:
   path: torch.nn.Conv1d
 convs_channels: [640, 640]
 convs_kernels: [5, 5]
-convs_strides: [2, 2]
+convs_strides: [1, 2]
 rnn_type:
   _target_: hydra.utils.get_class
   path: torch.nn.GRU
-n_rnn: 4
+n_rnn: 7
 hidden_size: 640
 bidirectional: true

@@ -4,7 +4,7 @@ instance_transforms:
     transforms:
       - _target_: torchaudio.transforms.MelSpectrogram
         sample_rate: 16000
-        n_fft: 300
+        n_fft: 600
       - _target_: src.transforms.LogStable
 
   train:

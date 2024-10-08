@@ -85,6 +85,11 @@ class DeepSpeech2Model(BaseModel):
             for _ in range(n_rnn)
         ])
 
+        self.rnn_norms = nn.ModuleList([
+            nn.BatchNorm1d(hidden_size)
+            for _ in range(n_rnn)
+        ])
+
         self.debedder = nn.Linear(hidden_size, n_tokens)
     
     def forward(self, spectrogram, spectrogram_length, **batch):
@@ -104,8 +109,9 @@ class DeepSpeech2Model(BaseModel):
             output = output.reshape(b, c * h, l)
         
         output = output.transpose(1, 2)
-        for rnn in self.rnns:
+        for rnn, norm in zip(self.rnns, self.rnn_norms):
             output, _ = rnn(output)
+            output = norm(output.transpose(1, 2)).transpose(1, 2)
         output = self.debedder(output)
 
         log_probs = nn.functional.log_softmax(output, dim=-1)
