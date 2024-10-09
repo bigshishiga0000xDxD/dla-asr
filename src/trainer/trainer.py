@@ -112,7 +112,7 @@ class Trainer(BaseTrainer):
                 pred = metric.text_decoder.decode(
                     log_probs.unsqueeze(0),
                     log_probs_length.unsqueeze(0)
-                )
+                )[0]
 
                 err = metric._error_fn(target, pred)
 
