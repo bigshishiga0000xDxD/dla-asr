@@ -8,9 +8,15 @@ defaults:
   - _self_
 optimizer:
   _target_: torch.optim.AdamW
-  lr: 3e-4
+  lr: 1e-6
   weight_decay: 1e-3
-lr_scheduler: null
+lr_scheduler:
+  _target_: torch.optim.lr_scheduler.OneCycleLR
+  max_lr: 3e-4
+  pct_start: 0.1
+  steps_per_epoch: ${trainer.epoch_len}
+  epochs: ${trainer.n_epochs}
+  anneal_strategy: cos
 loss_function:
   _target_: src.loss.CTCLossWrapper
 text_encoder:
