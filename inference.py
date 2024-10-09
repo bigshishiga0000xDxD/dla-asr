@@ -31,6 +31,8 @@ def main(config):
 
     # setup text_encoder
     text_encoder = instantiate(config.text_encoder)
+    # setup text_decoder
+    text_decoder = instantiate(config.text_decoder, encoder=text_encoder)
 
     # setup data_loader instances
     # batch_transforms should be put on device
@@ -58,6 +60,7 @@ def main(config):
         device=device,
         dataloaders=dataloaders,
         text_encoder=text_encoder,
+        text_decoder=text_decoder,
         batch_transforms=batch_transforms,
         save_path=save_path,
         metrics=metrics,

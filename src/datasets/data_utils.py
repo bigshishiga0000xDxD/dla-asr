@@ -50,7 +50,7 @@ def get_dataloaders(config, text_encoder, device):
 
     Args:
         config (DictConfig): hydra experiment config.
-        text_encoder (CTCTextEncoder): instance of the text encoder
+        text_encoder (TextEncoder): instance of the text encoder
             for the datasets.
         device (str): device to use for batch transforms.
     Returns:

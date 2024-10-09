@@ -42,7 +42,7 @@ class BaseTrainer:
             optimizer (Optimizer): optimizer for the model.
             lr_scheduler (LRScheduler): learning rate scheduler for the
                 optimizer.
-            text_encoder (CTCTextEncoder): text encoder.
+            text_encoder (TextEncoder): text encoder.
             config (DictConfig): experiment config containing training config.
             device (str): device for tensors and model.
             dataloaders (dict[DataLoader]): dataloaders for different

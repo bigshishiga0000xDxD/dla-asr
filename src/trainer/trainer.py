@@ -4,7 +4,7 @@ import pandas as pd
 
 from src.logger.utils import plot_spectrogram
 from src.metrics.tracker import MetricTracker
-from src.metrics.utils import calc_cer, calc_wer
+from src.metrics.base_metric import ErrorRateMetric
 from src.trainer.base_trainer import BaseTrainer
 
 
@@ -93,31 +93,35 @@ class Trainer(BaseTrainer):
         self, text, log_probs, log_probs_length, audio_path, examples_to_log=10, **batch
     ):
         # TODO add beam search
-        # Note: by improving text encoder and metrics design
-        # this logging can also be improved significantly
 
-        argmax_inds = log_probs.cpu().argmax(-1).numpy()
-        argmax_inds = [
-            inds[: int(ind_len)]
-            for inds, ind_len in zip(argmax_inds, log_probs_length.numpy())
-        ]
-        argmax_texts_raw = [self.text_encoder.decode(inds) for inds in argmax_inds]
-        argmax_texts = [self.text_encoder.ctc_decode(inds) for inds in argmax_inds]
-        tuples = list(zip(argmax_texts, text, argmax_texts_raw, audio_path))
+        tuples = zip(
+            log_probs[:examples_to_log],
+            log_probs_length[:examples_to_log],
+            text[:examples_to_log],
+            audio_path[:examples_to_log]
+        )
 
-        rows = {}
-        for pred, target, raw_pred, audio_path in tuples[:examples_to_log]:
+        rows = []
+        for log_probs, log_probs_length, target, audio_path in tuples:
             target = self.text_encoder.normalize_text(target)
-            wer = calc_wer(target, pred) * 100
-            cer = calc_cer(target, pred) * 100
+            for metric in self.metrics["inference"]:
+                assert isinstance(metric, ErrorRateMetric)
 
-            rows[Path(audio_path).name] = {
-                "target": target,
-                "raw prediction": raw_pred,
-                "predictions": pred,
-                "wer": wer,
-                "cer": cer,
-            }
+                # we might get different predictions for different metrics
+                # (e.g. argmax wer vs beam search wer), so we do inference independently
+                pred = metric.text_decoder.decode(
+                    log_probs.unsqueeze(0),
+                    log_probs_length.unsqueeze(0)
+                )
+
+                err = metric._error_fn(target, pred)
+
+                rows.append({
+                    "target": target,
+                    "predictions": pred,
+                    metric.name: err
+                })
+
         self.writer.add_table(
-            "predictions", pd.DataFrame.from_dict(rows, orient="index")
+            "predictions", pd.DataFrame(rows)
         )

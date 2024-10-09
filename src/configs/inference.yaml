@@ -1,12 +1,16 @@
 defaults:
   - model: deepspeech2
-  - metrics: metrics
+  - metrics: inference_metrics
   - datasets: librispeech-clean-test
   - dataloader: dataloader
   - transforms: transforms
   - _self_
 text_encoder:
-  _target_: src.text_encoder.CTCTextEncoder
+  _target_: src.text_encoder.TextEncoder
+text_decoder:
+  _target_: src.text_decoder.ArgmaxDecoder
+  encoder:
+    _target_: src.text_encoder.TextEncoder
 inferencer:
   device_tensors: ["spectrogram", "text_encoded"] # which tensors should be on device (ex. GPU)
   device: "cuda"

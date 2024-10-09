@@ -9,7 +9,7 @@ import torch
 # to calculate stuff more efficiently and prettier
 
 
-class CTCTextEncoder:
+class TextEncoder:
     EMPTY_TOK = ""
 
     def __init__(self, alphabet=None, **kwargs):
@@ -56,13 +56,6 @@ class CTCTextEncoder:
             raw_text (str): raw text with empty tokens and repetitions.
         """
         return "".join([self.ind2char[int(ind)] for ind in inds]).strip()
-
-    def ctc_decode(self, inds) -> str:
-        stack = []
-        for ind in inds:
-            if not stack or stack[-1] != ind:
-                stack.append(ind)
-        return self.decode(stack)
 
     @staticmethod
     def normalize_text(text: str):
