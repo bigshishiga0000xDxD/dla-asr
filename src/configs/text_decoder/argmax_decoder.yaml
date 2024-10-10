@@ -1,0 +1,3 @@
+_target_: src.text_decoder.ArgmaxDecoder
+encoder:
+  _target_: src.text_encoder.TextEncoder

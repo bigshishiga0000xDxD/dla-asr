@@ -1,0 +1,61 @@
+cer_argmax:
+  _target_: src.metrics.CERMetric
+  name: "CER_(Argmax)" # it is better to avoid spaces in names
+  text_encoder: 
+    _target_: src.text_encoder.TextEncoder
+  text_decoder:
+    _target_: src.text_decoder.ArgmaxDecoder
+    encoder:
+      _target_: src.text_encoder.TextEncoder 
+
+wer_argmax:
+  _target_: src.metrics.WERMetric
+  name: "WER_(Argmax)" # it is better to avoid spaces in names
+  text_encoder: 
+    _target_: src.text_encoder.TextEncoder
+  text_decoder:
+    _target_: src.text_decoder.ArgmaxDecoder
+    encoder:
+      _target_: src.text_encoder.TextEncoder 
+
+cer_beam_search_slow:
+  _target_: src.metrics.CERMetric
+  name: "CER_(Beam Search Slow)" # it is better to avoid spaces in names
+  text_encoder: 
+    _target_: src.text_encoder.TextEncoder
+  text_decoder:
+    _target_: src.text_decoder.BeamSearchDecoder
+    beam_size: 10
+    encoder:
+      _target_: src.text_encoder.TextEncoder 
+
+wer_beam_search_slow:
+  _target_: src.metrics.WERMetric
+  name: "WER_(Beam Search Slow)" # it is better to avoid spaces in names
+  text_encoder: 
+    _target_: src.text_encoder.TextEncoder
+  text_decoder:
+    _target_: src.text_decoder.BeamSearchDecoder
+    beam_size: 10
+    encoder:
+      _target_: src.text_encoder.TextEncoder 
+
+cer_beam_search_fast:
+  _target_: src.metrics.CERMetric
+  name: "CER_(Beam Search Fast)" # it is better to avoid spaces in names
+  text_encoder: 
+    _target_: src.text_encoder.TextEncoder
+  text_decoder:
+    _target_: src.text_decoder.PyCTCDecoder
+    encoder:
+      _target_: src.text_encoder.TextEncoder 
+  
+wer_beam_search_fast:
+  _target_: src.metrics.WERMetric
+  name: "WER_(Beam Search Fast)" # it is better to avoid spaces in names
+  text_encoder: 
+    _target_: src.text_encoder.TextEncoder
+  text_decoder:
+    _target_: src.text_decoder.PyCTCDecoder
+    encoder:
+      _target_: src.text_encoder.TextEncoder 

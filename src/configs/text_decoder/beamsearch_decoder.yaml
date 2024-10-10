@@ -1,0 +1,4 @@
+_target_: src.text_decoder.BeamSearchDecoder
+encoder:
+  _target_: src.text_encoder.TextEncoder
+beam_size: 10

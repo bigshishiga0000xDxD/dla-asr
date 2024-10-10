@@ -3,9 +3,6 @@ from src.text_decoder import BaseDecoder
 from src.text_encoder.text_encoder import TextEncoder
 
 class ArgmaxDecoder(BaseDecoder):
-    def __init__(self, encoder: TextEncoder):
-        super().__init__(encoder)
-    
     def _ctc_decode(self, inds) -> str:
         stack = []
         for ind in inds:
