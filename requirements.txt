@@ -1,7 +1,8 @@
-torch==2.2.0
-torchvision==0.17.0
-torchaudio==2.2.0
+torch==2.4.0
+torchaudio==2.4.0
+torchvision
 datasets==3.0.1
+transformers==4.45.2
 soundfile
 numpy==1.26.4
 torch_audiomentations

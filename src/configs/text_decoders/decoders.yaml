@@ -1,0 +1,59 @@
+argmax_decoder:
+  _target_: src.text_decoder.ArgmaxDecoder
+  encoder:
+    _target_: src.text_encoder.TextEncoder 
+
+beam_search_slow_decoder:
+  _target_: src.text_decoder.BeamSearchDecoder
+  encoder:
+    _target_: src.text_encoder.TextEncoder 
+  beam_size: 10
+
+beam_search_fast_decoder:
+  _target_: src.text_decoder.PyCTCDecoder
+  encoder:
+    _target_: src.text_encoder.TextEncoder 
+
+beam_search_fast_lm_decoder:
+  _target_: src.text_decoder.PyCTCDecoder
+  encoder:
+    _target_: src.text_encoder.TextEncoder 
+  light_lm_path:
+    _target_: src.utils.lm_utils.get_kenlm_path
+    model_name: "librispeech-4-gram"
+
+beam_search_fast_lm_unigram_decoder:
+  _target_: src.text_decoder.PyCTCDecoder
+  encoder:
+    _target_: src.text_encoder.TextEncoder 
+  light_lm_path:
+    _target_: src.utils.lm_utils.get_kenlm_path
+    model_name: "librispeech-4-gram"
+  unigrams:
+    _target_: src.utils.lm_utils.get_unigrams
+    model_name: "librispeech-4-gram"
+
+beam_search_fast_lm_decoder_reweight:
+  _target_: src.text_decoder.PyCTCDecoder
+  encoder:
+    _target_: src.text_encoder.TextEncoder 
+  light_lm_path:
+    _target_: src.utils.lm_utils.get_kenlm_path
+    model_name: "librispeech-4-gram"
+  heavy_lm:
+    _target_: src.utils.lm_utils.LanguageModel
+    device: ${device}
+
+beam_search_fast_lm_unigram_decoder_reweight:
+  _target_: src.text_decoder.PyCTCDecoder
+  encoder:
+    _target_: src.text_encoder.TextEncoder 
+  light_lm_path:
+    _target_: src.utils.lm_utils.get_kenlm_path
+    model_name: "librispeech-4-gram"
+  heavy_lm:
+    _target_: src.utils.lm_utils.LanguageModel
+    device: ${device}
+  unigrams:
+    _target_: src.utils.lm_utils.get_unigrams
+    model_name: "librispeech-4-gram"

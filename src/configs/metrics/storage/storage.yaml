@@ -1,61 +1,58 @@
+# it is important to define this config after `text_decoders` config
+# in final config
+
 cer_argmax:
   _target_: src.metrics.CERMetric
   name: "CER_(Argmax)" # it is better to avoid spaces in names
   text_encoder: 
     _target_: src.text_encoder.TextEncoder
-  text_decoder:
-    _target_: src.text_decoder.ArgmaxDecoder
-    encoder:
-      _target_: src.text_encoder.TextEncoder 
+  text_decoder: ${text_decoders.argmax_decoder}
 
 wer_argmax:
   _target_: src.metrics.WERMetric
   name: "WER_(Argmax)" # it is better to avoid spaces in names
   text_encoder: 
     _target_: src.text_encoder.TextEncoder
-  text_decoder:
-    _target_: src.text_decoder.ArgmaxDecoder
-    encoder:
-      _target_: src.text_encoder.TextEncoder 
-
-cer_beam_search_slow:
-  _target_: src.metrics.CERMetric
-  name: "CER_(Beam Search Slow)" # it is better to avoid spaces in names
-  text_encoder: 
-    _target_: src.text_encoder.TextEncoder
-  text_decoder:
-    _target_: src.text_decoder.BeamSearchDecoder
-    beam_size: 10
-    encoder:
-      _target_: src.text_encoder.TextEncoder 
+  text_decoder: ${text_decoders.argmax_decoder}
 
 wer_beam_search_slow:
   _target_: src.metrics.WERMetric
-  name: "WER_(Beam Search Slow)" # it is better to avoid spaces in names
+  name: "WER_(Beam_Search_Slow)" # it is better to avoid spaces in names
   text_encoder: 
     _target_: src.text_encoder.TextEncoder
-  text_decoder:
-    _target_: src.text_decoder.BeamSearchDecoder
-    beam_size: 10
-    encoder:
-      _target_: src.text_encoder.TextEncoder 
+  text_decoder: ${text_decoders.beam_search_slow_decoder}
 
-cer_beam_search_fast:
-  _target_: src.metrics.CERMetric
-  name: "CER_(Beam Search Fast)" # it is better to avoid spaces in names
-  text_encoder: 
-    _target_: src.text_encoder.TextEncoder
-  text_decoder:
-    _target_: src.text_decoder.PyCTCDecoder
-    encoder:
-      _target_: src.text_encoder.TextEncoder 
-  
 wer_beam_search_fast:
   _target_: src.metrics.WERMetric
-  name: "WER_(Beam Search Fast)" # it is better to avoid spaces in names
+  name: "WER_(Beam_Search_Fast)" # it is better to avoid spaces in names
   text_encoder: 
     _target_: src.text_encoder.TextEncoder
-  text_decoder:
-    _target_: src.text_decoder.PyCTCDecoder
-    encoder:
-      _target_: src.text_encoder.TextEncoder 
+  text_decoder: ${text_decoders.beam_search_fast_decoder}
+
+wer_beam_search_fast_lm:
+  _target_: src.metrics.WERMetric
+  name: "WER_(Beam_Search_Fast_LM)" # it is better to avoid spaces in names
+  text_encoder: 
+    _target_: src.text_encoder.TextEncoder
+  text_decoder: ${text_decoders.beam_search_fast_lm_decoder}
+
+wer_beam_search_fast_lm_unigram:
+  _target_: src.metrics.WERMetric
+  name: "WER_(Beam_Search_Fast_LM_unigram)" # it is better to avoid spaces in names
+  text_encoder: 
+    _target_: src.text_encoder.TextEncoder
+  text_decoder: ${text_decoders.beam_search_fast_lm_unigram_decoder}
+
+wer_beam_search_fast_lm_reweight:
+  _target_: src.metrics.WERMetric
+  name: "WER_(Beam_Search_Fast_LM_reweight)" # it is better to avoid spaces in names
+  text_encoder: 
+    _target_: src.text_encoder.TextEncoder
+  text_decoder: ${text_decoders.beam_search_fast_lm_decoder_reweight}
+
+wer_beam_search_fast_lm_unigram_reweight:
+  _target_: src.metrics.WERMetric
+  name: "WER_(Beam_Search_Fast_LM_unigram_reweight)" # it is better to avoid spaces in names
+  text_encoder: 
+    _target_: src.text_encoder.TextEncoder
+  text_decoder: ${text_decoders.beam_search_fast_lm_unigram_decoder_reweight}

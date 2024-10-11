@@ -1,16 +1,18 @@
 defaults:
   - model: deepspeech2
+  - text_decoders: decoders
   - metrics: inference_metrics
   - datasets: librispeech-clean-test
   - dataloader: dataloader
   - transforms: transforms
-  - text_decoder: pyctcdecoder
   - _self_
 text_encoder:
   _target_: src.text_encoder.TextEncoder
+text_decoder: ${text_decoders.argmax_decoder}
 inferencer:
   device_tensors: ["spectrogram", "text_encoded"] # which tensors should be on device (ex. GPU)
   device: "cuda"
   save_path: null # any name here, can be a dataset name
   seed: 1
   from_pretrained: null # path to the pretrained model
+device: ${inferencer.device}

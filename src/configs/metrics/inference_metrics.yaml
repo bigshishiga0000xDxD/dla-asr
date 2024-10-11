@@ -5,5 +5,8 @@ inference:
   # metrics that are calculated during inference
   - ${metrics.storage.cer_argmax}
   - ${metrics.storage.wer_argmax}
-  - ${metrics.storage.cer_beam_search_fast}
   - ${metrics.storage.wer_beam_search_fast}
+  - ${metrics.storage.wer_beam_search_fast_lm}
+  - ${metrics.storage.wer_beam_search_fast_lm_unigram}
+  - ${metrics.storage.wer_beam_search_fast_lm_reweight}
+  - ${metrics.storage.wer_beam_search_fast_lm_unigram_reweight}
