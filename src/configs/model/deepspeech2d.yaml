@@ -1,0 +1,14 @@
+_target_: src.model.DeepSpeech2Model
+in_channels: 1
+conv_type:
+  _target_: hydra.utils.get_class
+  path: torch.nn.Conv2d
+convs_channels: [32, 32]
+convs_kernels: [[41, 11], [21, 11]]
+convs_strides: [[2, 1], [2, 1]]
+rnn_type:
+  _target_: hydra.utils.get_class
+  path: torch.nn.GRU
+n_rnn: 7
+hidden_size: 384
+bidirectional: true

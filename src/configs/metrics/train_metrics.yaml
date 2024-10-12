@@ -9,5 +9,4 @@ inference:
   # metrics that are calculated during validation
   - ${metrics.storage.cer_argmax}
   - ${metrics.storage.wer_argmax}
-  - ${metrics.storage.wer_beam_search_fast}
   

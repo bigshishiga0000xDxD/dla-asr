@@ -1,6 +1,7 @@
 defaults:
   - model: deepspeech2
   - writer: wandb
+  - text_decoders: decoders
   - metrics: train_metrics
   - datasets: librispeech-clean
   - dataloader: dataloader

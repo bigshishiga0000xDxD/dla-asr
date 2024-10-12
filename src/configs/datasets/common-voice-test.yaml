@@ -1,0 +1,4 @@
+test:
+  _target_: src.datasets.CommonVoiceDataset
+  split: "test"
+  instance_transforms: ${transforms.instance_transforms.train}

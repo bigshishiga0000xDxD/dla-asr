@@ -2,7 +2,7 @@ defaults:
   - model: deepspeech2
   - text_decoders: decoders
   - metrics: inference_metrics
-  - datasets: librispeech-clean-test
+  - datasets: librispeech-other-test
   - dataloader: dataloader
   - transforms: transforms
   - _self_
