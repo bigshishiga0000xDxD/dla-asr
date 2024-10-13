@@ -15,29 +15,32 @@ def collate_fn(dataset_items: list[dict]):
             of the tensors.
     """
 
-    result = default_collate([
-        {
-            'spectrogram_length': item['spectrogram'].shape[-1],
-            'text_encoded_length': item['text_encoded'].shape[-1],
-            'text': item['text'],
-            'audio_path': item['audio_path']
-        }
-        for item in dataset_items
-    ])
+    result = default_collate(
+        [
+            {
+                "spectrogram_length": item["spectrogram"].shape[-1],
+                "text_encoded_length": item["text_encoded"].shape[-1],
+                "text": item["text"],
+                "audio_path": item["audio_path"],
+            }
+            for item in dataset_items
+        ]
+    )
 
-    result.update({
-        'spectrogram': torch.nn.utils.rnn.pad_sequence([
-            item['spectrogram'].squeeze(0).T
-            for item in dataset_items
-        ], batch_first=True).transpose(1, 2),
-        'text_encoded': torch.nn.utils.rnn.pad_sequence([
-            item['text_encoded'].squeeze(0)
-            for item in dataset_items
-        ], batch_first=True),
-        'audio': torch.nn.utils.rnn.pad_sequence([
-            item['audio'].squeeze(0)
-            for item in dataset_items
-        ], batch_first=True)
-    })
+    result.update(
+        {
+            "spectrogram": torch.nn.utils.rnn.pad_sequence(
+                [item["spectrogram"].squeeze(0).T for item in dataset_items],
+                batch_first=True,
+            ).transpose(1, 2),
+            "text_encoded": torch.nn.utils.rnn.pad_sequence(
+                [item["text_encoded"].squeeze(0) for item in dataset_items],
+                batch_first=True,
+            ),
+            "audio": torch.nn.utils.rnn.pad_sequence(
+                [item["audio"].squeeze(0) for item in dataset_items], batch_first=True
+            ),
+        }
+    )
 
     return result

@@ -15,7 +15,7 @@ class PyCTCDecoder(BaseDecoder):
         heavy_lm=None,
         alpha=0.5,
         beta=1.5,
-        n_best=3
+        n_best=3,
     ):
         super().__init__(encoder)
 
@@ -24,13 +24,13 @@ class PyCTCDecoder(BaseDecoder):
             kenlm_model_path=light_lm_path,
             unigrams=unigrams,
             alpha=alpha,
-            beta=beta
+            beta=beta,
         )
         self.beam_size = beam_size
         self.heavy_lm = heavy_lm
         self.beta = beta
         self.n_best = n_best
-    
+
     def decode(self, log_probs: Tensor, log_probs_length: Tensor, **batch) -> list[str]:
         if self.heavy_lm:
             return self._decode_beams(log_probs, log_probs_length)
@@ -44,14 +44,12 @@ class PyCTCDecoder(BaseDecoder):
             hyps = [
                 (beam[0], beam[3])
                 for beam in self.decoder.decode_beams(
-                    log_probs.detach().cpu().numpy(),
-                    beam_width=self.beam_size
-                )[:self.n_best]
+                    log_probs.detach().cpu().numpy(), beam_width=self.beam_size
+                )[: self.n_best]
             ]
 
             hyps = [
-                (hyp, score + self.beta * self.heavy_lm(hyp))
-                for hyp, score in hyps
+                (hyp, score + self.beta * self.heavy_lm(hyp)) for hyp, score in hyps
             ]
 
             output.append(max(hyps, key=lambda p: p[1])[0])
@@ -61,8 +59,9 @@ class PyCTCDecoder(BaseDecoder):
         output = []
         for log_probs, log_probs_length in zip(log_probs, log_probs_length):
             log_probs = log_probs[:log_probs_length]
-            output.append(self.decoder.decode(
-                log_probs.detach().cpu().numpy(),
-                beam_width=self.beam_size
-            ))
+            output.append(
+                self.decoder.decode(
+                    log_probs.detach().cpu().numpy(), beam_width=self.beam_size
+                )
+            )
         return output

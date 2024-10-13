@@ -2,20 +2,21 @@ from torch import nn
 
 from src.model.base import BaseModel
 
+
 class DeepSpeech2Model(BaseModel):
     def __init__(
-            self,
-            in_channels: int,
-            conv_type: type[nn.Conv1d] | type[nn.Conv2d],
-            convs_channels: list[int],
-            convs_kernels: list[int | tuple[int, int]],
-            convs_strides: list[int | tuple[int, int]],
-            rnn_type: type[nn.RNN] | type[nn.LSTM] | type[nn.GRU],
-            n_rnn: int,
-            hidden_size: int,
-            n_tokens: int,
-            bidirectional: bool
-        ):
+        self,
+        in_channels: int,
+        conv_type: type[nn.Conv1d] | type[nn.Conv2d],
+        convs_channels: list[int],
+        convs_kernels: list[int | tuple[int, int]],
+        convs_strides: list[int | tuple[int, int]],
+        rnn_type: type[nn.RNN] | type[nn.LSTM] | type[nn.GRU],
+        n_rnn: int,
+        hidden_size: int,
+        n_tokens: int,
+        bidirectional: bool,
+    ):
         """
         DeepSpeech2 architechture (http://proceedings.mlr.press/v48/amodei16.pdf)
 
@@ -41,32 +42,33 @@ class DeepSpeech2Model(BaseModel):
 
         assert len(convs_channels) == len(convs_kernels) == len(convs_strides)
 
-        self.convs = nn.ModuleList([
-            conv_type(
-                in_channels=in_channels,
-                out_channels=out_channels,
-                kernel_size=kernel_size,
-                stride=stride,
-                padding=0,
-                bias=False
-            )
-            for in_channels, out_channels, kernel_size, stride in zip(
-                [in_channels] + convs_channels[:-1],
-                convs_channels,
-                convs_kernels,
-                convs_strides
-            )
-        ])
+        self.convs = nn.ModuleList(
+            [
+                conv_type(
+                    in_channels=in_channels,
+                    out_channels=out_channels,
+                    kernel_size=kernel_size,
+                    stride=stride,
+                    padding=0,
+                    bias=False,
+                )
+                for in_channels, out_channels, kernel_size, stride in zip(
+                    [in_channels] + convs_channels[:-1],
+                    convs_channels,
+                    convs_kernels,
+                    convs_strides,
+                )
+            ]
+        )
 
         if conv_type == nn.Conv1d:
             batch_norm = nn.BatchNorm1d
         elif conv_type == nn.Conv2d:
             batch_norm = nn.BatchNorm2d
 
-        self.conv_norms = nn.ModuleList([
-            batch_norm(out_channels)
-            for out_channels in convs_channels
-        ])
+        self.conv_norms = nn.ModuleList(
+            [batch_norm(out_channels) for out_channels in convs_channels]
+        )
 
         if bidirectional:
             assert hidden_size % 2 == 0
@@ -75,23 +77,24 @@ class DeepSpeech2Model(BaseModel):
         else:
             output_size = hidden_size
 
-        self.rnns = nn.ModuleList([
-            rnn_type(
-                input_size=hidden_size,
-                hidden_size=output_size,
-                batch_first=True,
-                bidirectional=bidirectional
-            )
-            for _ in range(n_rnn)
-        ])
+        self.rnns = nn.ModuleList(
+            [
+                rnn_type(
+                    input_size=hidden_size,
+                    hidden_size=output_size,
+                    batch_first=True,
+                    bidirectional=bidirectional,
+                )
+                for _ in range(n_rnn)
+            ]
+        )
 
-        self.rnn_norms = nn.ModuleList([
-            nn.BatchNorm1d(hidden_size)
-            for _ in range(n_rnn)
-        ])
+        self.rnn_norms = nn.ModuleList(
+            [nn.BatchNorm1d(hidden_size) for _ in range(n_rnn)]
+        )
 
         self.debedder = nn.Linear(hidden_size, n_tokens)
-    
+
     def forward(self, spectrogram, spectrogram_length, **batch):
         output = spectrogram
         if isinstance(self.convs[0], nn.Conv2d):
@@ -102,12 +105,12 @@ class DeepSpeech2Model(BaseModel):
             output = conv(output)
             output = norm(output)
             output = nn.functional.relu(output)
-        
+
         if len(output.shape) == 4:
             # For 2d convolutions, flatten spacial dimension afterwards
             b, c, h, l = output.shape
             output = output.reshape(b, c * h, l)
-        
+
         output = output.transpose(1, 2)
         for rnn, norm in zip(self.rnns, self.rnn_norms):
             output, _ = rnn(output)
@@ -118,9 +121,11 @@ class DeepSpeech2Model(BaseModel):
         log_probs_length = self.transform_input_lengths(spectrogram_length)
 
         return {"log_probs": log_probs, "log_probs_length": log_probs_length}
-    
+
     def transform_input_lengths(self, input_lengths):
         output_lengths = input_lengths
         for conv in self.convs:
-            output_lengths = (output_lengths - conv.kernel_size[-1]) // conv.stride[-1] + 1
+            output_lengths = (output_lengths - conv.kernel_size[-1]) // conv.stride[
+                -1
+            ] + 1
         return output_lengths

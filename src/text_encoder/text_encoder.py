@@ -5,6 +5,7 @@ import torch
 
 # TODO add BPE support
 
+
 class TextEncoder:
     EMPTY_TOK = ""
 

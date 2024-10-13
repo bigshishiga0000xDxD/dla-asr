@@ -1,6 +1,7 @@
 from abc import abstractmethod
 from torch import Tensor
 
+
 class BaseMetric:
     """
     Base class for all metrics
@@ -27,7 +28,7 @@ class ErrorRateMetric(BaseMetric):
         super().__init__(*args, **kwargs)
         self.text_encoder = text_encoder
         self.text_decoder = text_decoder
-    
+
     @abstractmethod
     def _error_fn(self, target_text, predictred_text):
         raise NotImplementedError()

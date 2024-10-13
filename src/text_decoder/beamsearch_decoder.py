@@ -6,6 +6,7 @@ from scipy.special import logsumexp
 from src.text_decoder import BaseDecoder
 from src.text_encoder.text_encoder import TextEncoder
 
+
 class BeamSearchDecoder(BaseDecoder):
     def __init__(self, encoder: TextEncoder, beam_size):
         super().__init__(encoder)
@@ -17,7 +18,12 @@ class BeamSearchDecoder(BaseDecoder):
         for log_probs, log_probs_length in zip(log_probs, log_probs_length):
             log_probs = log_probs[:log_probs_length].detach().cpu()
             # state of beam is decoded string and the index of last token
-            beams = {(self.encoder.EMPTY_TOK, self.encoder.char2ind[self.encoder.EMPTY_TOK]): 0}
+            beams = {
+                (
+                    self.encoder.EMPTY_TOK,
+                    self.encoder.char2ind[self.encoder.EMPTY_TOK],
+                ): 0
+            }
 
             # append dummy empty token token to merge beams with the same
             # decoded strings and different last tokens to the one beam in the end
@@ -25,10 +31,10 @@ class BeamSearchDecoder(BaseDecoder):
             id_vector[self.encoder.char2ind[self.encoder.EMPTY_TOK]] = 0
             log_probs = torch.vstack((log_probs, id_vector.unsqueeze(0)))
 
-            for logits in log_probs: 
+            for logits in log_probs:
                 new_beams = defaultdict(list)
                 for beam, log_prob in beams.items():
-                    for i, x in enumerate(logits): 
+                    for i, x in enumerate(logits):
                         # appended token is equal to last one in sequence
                         if i == beam[1]:
                             # beam doesn't change, probs are multiplied
@@ -40,12 +46,16 @@ class BeamSearchDecoder(BaseDecoder):
                             new_beams[(string, i)].append(log_prob + x)
 
                 # take sum over all probs for every beam
-                new_beams = {beam: logsumexp(log_probs) for beam, log_probs in new_beams.items()}
+                new_beams = {
+                    beam: logsumexp(log_probs) for beam, log_probs in new_beams.items()
+                }
 
                 # take top k beams
-                new_beams = dict(sorted(
-                    new_beams.items(), key=lambda x: x[1], reverse=True
-                )[:self.beam_size])
+                new_beams = dict(
+                    sorted(new_beams.items(), key=lambda x: x[1], reverse=True)[
+                        : self.beam_size
+                    ]
+                )
 
                 beams = new_beams
 
@@ -55,5 +65,5 @@ class BeamSearchDecoder(BaseDecoder):
                     best_string, best_score = beam[0], score
 
             output.append(best_string)
-        
+
         return output

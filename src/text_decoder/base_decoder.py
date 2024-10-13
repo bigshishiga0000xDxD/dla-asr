@@ -4,6 +4,7 @@ import torch
 
 from src.text_encoder.text_encoder import TextEncoder
 
+
 class BaseDecoder:
     def __init__(self, encoder: TextEncoder):
         """
@@ -14,10 +15,7 @@ class BaseDecoder:
 
     @abstractmethod
     def decode(
-        self,
-        log_probs: torch.Tensor,
-        log_probs_length: torch.Tensor,
-        **batch
+        self, log_probs: torch.Tensor, log_probs_length: torch.Tensor, **batch
     ) -> list[str]:
         """
         Base decoder method

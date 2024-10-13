@@ -3,6 +3,7 @@ from torch.nn import Sequential
 
 from src.model.base import BaseModel
 
+
 class MLPModel(BaseModel):
     """
     Simple MLP

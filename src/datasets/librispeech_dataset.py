@@ -23,7 +23,7 @@ URL_LINKS = {
 DATA_PARTS = {
     "train-clean": ["train-clean-100", "train-clean-360"],
     "train-other": ["train-other-500"],
-    "train-all": ["train-clean-100", "train-clean-360", "train-other-500"]
+    "train-all": ["train-clean-100", "train-clean-360", "train-other-500"],
 }
 
 
@@ -38,10 +38,7 @@ class LibrispeechDataset(BaseDataset):
 
         if part in DATA_PARTS:
             index = sum(
-                [
-                    self._get_or_load_index(subpart)
-                    for subpart in DATA_PARTS[part]
-                ],
+                [self._get_or_load_index(subpart) for subpart in DATA_PARTS[part]],
                 [],
             )
         else:

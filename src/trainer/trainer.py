@@ -90,7 +90,7 @@ class Trainer(BaseTrainer):
         spectrogram_for_plot = spectrogram[0].detach().cpu()
         image = plot_spectrogram(spectrogram_for_plot)
         self.writer.add_image("spectrogram", image)
-    
+
     def log_audio(self, audio, **batch):
         self.writer.add_audio("audio", audio[0], sample_rate=16000)
 
@@ -101,7 +101,7 @@ class Trainer(BaseTrainer):
             log_probs[:examples_to_log],
             log_probs_length[:examples_to_log],
             text[:examples_to_log],
-            audio_path[:examples_to_log]
+            audio_path[:examples_to_log],
         )
 
         rows = []
@@ -113,18 +113,11 @@ class Trainer(BaseTrainer):
                 # we might get different predictions for different metrics
                 # (e.g. argmax wer vs beam search wer), so we do inference independently
                 pred = metric.text_decoder.decode(
-                    log_probs.unsqueeze(0),
-                    log_probs_length.unsqueeze(0)
+                    log_probs.unsqueeze(0), log_probs_length.unsqueeze(0)
                 )[0]
 
                 err = metric._error_fn(target, pred)
 
-                rows.append({
-                    "target": target,
-                    "predictions": pred,
-                    metric.name: err
-                })
+                rows.append({"target": target, "predictions": pred, metric.name: err})
 
-        self.writer.add_table(
-            "predictions", pd.DataFrame(rows)
-        )
+        self.writer.add_table("predictions", pd.DataFrame(rows))

@@ -91,9 +91,9 @@ class BaseDataset(Dataset):
             "audio_path": audio_path,
         }
 
-        instance_data = self.preprocess_data(instance_data, target='audio')
-        instance_data['spectrogram'] = self.get_spectrogram(instance_data['audio'])
-        instance_data = self.preprocess_data(instance_data, target='spectrogram')
+        instance_data = self.preprocess_data(instance_data, target="audio")
+        instance_data["spectrogram"] = self.get_spectrogram(instance_data["audio"])
+        instance_data = self.preprocess_data(instance_data, target="spectrogram")
 
         return instance_data
 
@@ -139,7 +139,9 @@ class BaseDataset(Dataset):
                 instance transform).
         """
         if self.instance_transforms and self.instance_transforms.get(target):
-            instance_data[target] = self.instance_transforms[target](instance_data[target])
+            instance_data[target] = self.instance_transforms[target](
+                instance_data[target]
+            )
         return instance_data
 
     @staticmethod
@@ -179,9 +181,7 @@ class BaseDataset(Dataset):
         initial_size = len(index)
         if max_text_length is not None:
             exceeds_text_length = (
-                np.array(
-                    [len(TextEncoder.normalize_text(el["text"])) for el in index]
-                )
+                np.array([len(TextEncoder.normalize_text(el["text"])) for el in index])
                 >= max_text_length
             )
             _total = exceeds_text_length.sum()

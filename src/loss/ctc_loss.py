@@ -10,9 +10,10 @@ class CTCLossWrapper(CTCLoss):
         log_probs_t = torch.transpose(log_probs, 0, 1)
 
         if not self.zero_infinity:
-            assert (log_probs_length >= text_encoded_length).all(), \
-                "Length of the predicted sequence is less than length of " \
+            assert (log_probs_length >= text_encoded_length).all(), (
+                "Length of the predicted sequence is less than length of "
                 "ground-truth sequence, loss is not defined"
+            )
 
         loss = super().forward(
             log_probs=log_probs_t,
