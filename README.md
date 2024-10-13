@@ -24,7 +24,7 @@
 
 * download pretrained model with
    ```bash
-   gdown https://drive.google.com/uc?id=1cZDbad3YpXuaouZ6ZuyQwEDjf4C5veVF
+   gdown "https://drive.google.com/uc?id=1cZDbad3YpXuaouZ6ZuyQwEDjf4C5veVF"
    ```
 
 * train baseline model with
