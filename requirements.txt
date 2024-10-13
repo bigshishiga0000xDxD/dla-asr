@@ -1,6 +1,6 @@
 torch==2.4.0
 torchaudio==2.4.0
-torchvision
+torchvision==0.19.0
 datasets==3.0.1
 transformers==4.45.2
 soundfile
@@ -16,6 +16,7 @@ wget
 editdistance
 pyctcdecode
 https://github.com/kpu/kenlm/archive/master.zip
+flashlight-text
 gdown
 
 black
