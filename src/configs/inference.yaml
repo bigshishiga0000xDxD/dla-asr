@@ -4,7 +4,7 @@ defaults:
   - metrics: inference_metrics
   - datasets: librispeech-other-test
   - dataloader: dataloader
-  - transforms: transforms
+  - transforms: base
   - _self_
 text_encoder:
   _target_: src.text_encoder.TextEncoder

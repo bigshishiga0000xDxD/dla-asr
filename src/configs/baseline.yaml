@@ -1,15 +1,15 @@
 defaults:
-  - model: deepspeech2
+  - model: deepspeech2d
   - writer: wandb
   - text_decoders: decoders
   - metrics: train_metrics
-  - datasets: librispeech-clean
+  - datasets: librispeech-all
   - dataloader: dataloader
-  - transforms: transforms
+  - transforms: base_augs
   - _self_
 optimizer:
   _target_: torch.optim.AdamW
-  lr: 1e-6
+  lr: 1e-7
   weight_decay: 1e-3
 lr_scheduler:
   _target_: torch.optim.lr_scheduler.OneCycleLR
@@ -20,6 +20,7 @@ lr_scheduler:
   anneal_strategy: cos
 loss_function:
   _target_: src.loss.CTCLossWrapper
+  zero_infinity: true
 text_encoder:
   _target_: src.text_encoder.TextEncoder
 trainer:

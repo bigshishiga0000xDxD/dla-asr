@@ -1,0 +1,14 @@
+defaults:
+  - storage: storage
+
+instance_transforms:
+  train:
+    get_spectrogram: ${transforms.storage.get_spectrogram}
+  inference:
+    get_spectrogram: ${transforms.storage.get_spectrogram}
+
+batch_transforms:
+  train:
+    spectrogram: ${transforms.storage.normalize}
+  inference:
+    spectrogram: ${transforms.storage.normalize}

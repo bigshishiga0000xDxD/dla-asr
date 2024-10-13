@@ -1,0 +1,23 @@
+n_fft: 600
+normalize:
+  _target_: src.transforms.Normalize0d
+  mean: -5.457
+  std: 4.168
+
+get_spectrogram: # special key for getting spectrogram
+  _target_: torch.nn.Sequential
+  _args_:
+    - _target_: torchaudio.transforms.MelSpectrogram
+      sample_rate: 16000
+      n_fft: ${transforms.storage.n_fft}
+    - _target_: src.transforms.LogStable
+
+frequency_masking:
+  _target_: torchaudio.transforms.FrequencyMasking
+  freq_mask_param: 27
+  iid_masks: true
+
+time_masking:
+  _target_: torchaudio.transforms.TimeMasking
+  time_mask_param: 72
+  iid_masks: true
