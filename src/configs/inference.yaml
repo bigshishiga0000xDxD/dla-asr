@@ -1,5 +1,5 @@
 defaults:
-  - model: deepspeech2
+  - model: deepspeech2d
   - text_decoders: decoders
   - metrics: inference_metrics
   - datasets: librispeech-other-test

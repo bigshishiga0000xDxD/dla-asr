@@ -33,6 +33,10 @@ def collate_fn(dataset_items: list[dict]):
         'text_encoded': torch.nn.utils.rnn.pad_sequence([
             item['text_encoded'].squeeze(0)
             for item in dataset_items
+        ], batch_first=True),
+        'audio': torch.nn.utils.rnn.pad_sequence([
+            item['audio'].squeeze(0)
+            for item in dataset_items
         ], batch_first=True)
     })
 

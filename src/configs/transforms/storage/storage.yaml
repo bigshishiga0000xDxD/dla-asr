@@ -21,3 +21,13 @@ time_masking:
   _target_: torchaudio.transforms.TimeMasking
   time_mask_param: 72
   iid_masks: true
+
+gain:
+  _target_: src.transforms.wav_augs.Gain
+  min_gain_in_db: -7.0
+  max_gain_in_db: 7.0
+  p: 1.0
+
+noise:
+  _target_: src.transforms.wav_augs.GaussianNoiser
+  std: 0.0005

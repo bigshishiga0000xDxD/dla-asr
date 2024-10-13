@@ -16,6 +16,7 @@ wget
 editdistance
 pyctcdecode
 https://github.com/kpu/kenlm/archive/master.zip
+gdown
 
 black
 isort

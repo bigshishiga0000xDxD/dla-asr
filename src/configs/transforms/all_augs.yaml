@@ -1,0 +1,25 @@
+defaults:
+  - storage: storage
+
+instance_transforms:
+  train:
+    audio:
+      _target_: torch.nn.Sequential
+      _args_: 
+        - ${transforms.storage.gain}
+        - ${transforms.storage.noise}
+    get_spectrogram: ${transforms.storage.get_spectrogram}
+  inference:
+    get_spectrogram: ${transforms.storage.get_spectrogram}
+
+batch_transforms:
+  train:
+    spectrogram:
+      _target_: torch.nn.Sequential
+      _args_:
+        - ${transforms.storage.normalize}
+        - ${transforms.storage.time_masking}
+        - ${transforms.storage.frequency_masking}
+
+  inference:
+    spectrogram: ${transforms.storage.normalize}

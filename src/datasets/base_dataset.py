@@ -84,20 +84,16 @@ class BaseDataset(Dataset):
         text = data_dict["text"]
         text_encoded = self.text_encoder.encode(text)
 
-        spectrogram = self.get_spectrogram(audio)
-
         instance_data = {
             "audio": audio,
-            "spectrogram": spectrogram,
             "text": text,
             "text_encoded": text_encoded,
             "audio_path": audio_path,
         }
 
-        # TODO think of how to apply wave augs before calculating spectrogram
-        # Note: you may want to preserve both audio in time domain and
-        # in time-frequency domain for logging
-        instance_data = self.preprocess_data(instance_data)
+        instance_data = self.preprocess_data(instance_data, target='audio')
+        instance_data['spectrogram'] = self.get_spectrogram(instance_data['audio'])
+        instance_data = self.preprocess_data(instance_data, target='spectrogram')
 
         return instance_data
 
@@ -127,7 +123,7 @@ class BaseDataset(Dataset):
         """
         return self.instance_transforms["get_spectrogram"](audio)
 
-    def preprocess_data(self, instance_data):
+    def preprocess_data(self, instance_data, target):
         """
         Preprocess data with instance transforms.
 
@@ -136,18 +132,14 @@ class BaseDataset(Dataset):
         Args:
             instance_data (dict): dict, containing instance
                 (a single dataset element).
+            target (str): audio or spectrogram
         Returns:
             instance_data (dict): dict, containing instance
                 (a single dataset element) (possibly transformed via
                 instance transform).
         """
-        if self.instance_transforms is not None:
-            for transform_name in self.instance_transforms.keys():
-                if transform_name == "get_spectrogram":
-                    continue  # skip special key
-                instance_data[transform_name] = self.instance_transforms[
-                    transform_name
-                ](instance_data[transform_name])
+        if self.instance_transforms and self.instance_transforms.get(target):
+            instance_data[target] = self.instance_transforms[target](instance_data[target])
         return instance_data
 
     @staticmethod

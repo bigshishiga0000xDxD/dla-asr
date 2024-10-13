@@ -1,8 +1,11 @@
+import sys
 import hydra
 from hydra.utils import instantiate
 from tqdm import tqdm
 
 import torch
+
+sys.path.append('.')
 
 from src.datasets.data_utils import get_dataloaders
 
